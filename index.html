@@ -1,1195 +1,872 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ELARA | Guitarist & Vocalist</title>
+    <title>Elara — Guitarist & Vocalist</title>
+    
+    <!-- Preload critical fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;900&family=Syncopate:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- GSAP -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    
+    <!-- Lenis Smooth Scroll -->
+    <script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'elara': {
+                            black: '#0a0a0a',
+                            dark: '#141414',
+                            gray: '#888888',
+                            light: '#e6e6e6',
+                            white: '#fafafa',
+                            accent: '#c9a87c', // Muted gold/bronze
+                            'accent-hover': '#b8976b'
+                        }
+                    },
+                    fontFamily: {
+                        'serif': ['"Playfair Display"', 'Georgia', 'serif'],
+                        'sans': ['"Inter"', 'system-ui', 'sans-serif'],
+                    },
+                    letterSpacing: {
+                        'ultra-wide': '0.25em',
+                    }
+                }
+            }
+        }
+    </script>
+
     <style>
         :root {
-            --color-guitar: #1a0f0a;
-            --color-vocal: #f4e4c1;
-            --color-gold: #d4af37;
-            --color-rust: #8b4513;
-            --cursor-size: 20px;
+            --cursor-size: 12px;
+            --cursor-hover-size: 80px;
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            cursor: none;
+        }
+
+        html {
+            scroll-behavior: auto; /* Lenis handles this */
         }
 
         body {
             font-family: 'Inter', sans-serif;
-            background: var(--color-guitar);
-            color: var(--color-vocal);
+            background-color: #0a0a0a;
+            color: #fafafa;
             overflow-x: hidden;
+            cursor: none;
         }
 
         /* Custom Cursor */
         .cursor {
-            width: var(--cursor-size);
-            height: var(--cursor-size);
-            border: 2px solid var(--color-gold);
-            border-radius: 50%;
             position: fixed;
             pointer-events: none;
             z-index: 9999;
             mix-blend-mode: difference;
-            transition: transform 0.2s ease;
+            transition: transform 0.15s ease-out;
         }
 
         .cursor-dot {
-            width: 4px;
-            height: 4px;
-            background: var(--color-gold);
+            width: var(--cursor-size);
+            height: var(--cursor-size);
+            background: #fafafa;
             border-radius: 50%;
-            position: fixed;
-            pointer-events: none;
-            z-index: 9999;
-            mix-blend-mode: difference;
+            transition: transform 0.2s ease, opacity 0.2s ease;
         }
 
-        .cursor.hover {
-            transform: scale(3);
-            background: rgba(212, 175, 55, 0.1);
-        }
-
-        /* Navigation */
-        nav {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            padding: 2rem 4rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 1000;
-            mix-blend-mode: difference;
-        }
-
-        .logo {
-            font-family: 'Syncopate', sans-serif;
-            font-size: 1.5rem;
-            font-weight: 700;
-            letter-spacing: 0.2em;
-            color: var(--color-vocal);
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 3rem;
-            list-style: none;
-        }
-
-        .nav-links a {
-            font-family: 'Cinzel', serif;
-            text-decoration: none;
-            color: var(--color-vocal);
-            font-size: 0.9rem;
-            letter-spacing: 0.1em;
-            position: relative;
-            padding: 0.5rem 0;
-        }
-
-        .nav-links a::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 0;
-            height: 1px;
-            background: var(--color-gold);
-            transition: width 0.3s ease;
-        }
-
-        .nav-links a:hover::after {
-            width: 100%;
-        }
-
-        /* Hero Section with Guitar Strings Canvas */
-        #hero {
-            height: 100vh;
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-        }
-
-        #guitar-canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
-        }
-
-        .hero-content {
-            position: relative;
-            z-index: 10;
-            text-align: center;
-            mix-blend-mode: exclusion;
-        }
-
-        .hero-title {
-            font-family: 'Syncopate', sans-serif;
-            font-size: clamp(3rem, 10vw, 8rem);
-            font-weight: 900;
-            letter-spacing: -0.05em;
-            line-height: 1;
-            margin-bottom: 1rem;
-            background: linear-gradient(135deg, var(--color-vocal) 0%, var(--color-gold) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .hero-subtitle {
-            font-family: 'Cinzel', serif;
-            font-size: 1.2rem;
-            letter-spacing: 0.5em;
-            text-transform: uppercase;
-            opacity: 0.8;
-        }
-
-        .scroll-indicator {
-            position: absolute;
-            bottom: 3rem;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 1rem;
-            opacity: 0.6;
-        }
-
-        .scroll-line {
-            width: 1px;
-            height: 60px;
-            background: linear-gradient(to bottom, var(--color-gold), transparent);
-            animation: scrollPulse 2s infinite;
-        }
-
-        @keyframes scrollPulse {
-            0%, 100% { transform: scaleY(1); opacity: 0.6; }
-            50% { transform: scaleY(1.5); opacity: 1; }
-        }
-
-        /* Dual Persona Section */
-        #persona {
-            min-height: 100vh;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            position: relative;
-        }
-
-        .persona-side {
-            position: relative;
-            padding: 6rem 4rem;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            overflow: hidden;
-            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .persona-guitar {
-            background: linear-gradient(135deg, #0f0c0b 0%, #1a1410 100%);
-            border-right: 1px solid rgba(212, 175, 55, 0.2);
-        }
-
-        .persona-vocal {
-            background: linear-gradient(135deg, #2a2520 0%, #1f1a15 100%);
-        }
-
-        .persona-side:hover {
-            flex: 1.2;
-        }
-
-        .persona-icon {
-            width: 80px;
-            height: 80px;
-            border: 2px solid var(--color-gold);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 2rem;
-            font-size: 2rem;
-            color: var(--color-gold);
-            transition: transform 0.6s ease;
-        }
-
-        .persona-side:hover .persona-icon {
-            transform: rotate(360deg);
-        }
-
-        .persona-title {
-            font-family: 'Cinzel', serif;
-            font-size: 3rem;
-            margin-bottom: 1.5rem;
-            color: var(--color-vocal);
-        }
-
-        .persona-desc {
-            font-size: 1.1rem;
-            line-height: 1.8;
-            opacity: 0.8;
-            max-width: 400px;
-        }
-
-        .persona-stats {
-            display: flex;
-            gap: 2rem;
-            margin-top: 3rem;
-            padding-top: 2rem;
-            border-top: 1px solid rgba(212, 175, 55, 0.3);
-        }
-
-        .stat {
-            text-align: center;
-        }
-
-        .stat-number {
-            font-family: 'Syncopate', sans-serif;
-            font-size: 2rem;
-            color: var(--color-gold);
-            display: block;
-        }
-
-        .stat-label {
-            font-size: 0.8rem;
-            letter-spacing: 0.2em;
-            text-transform: uppercase;
-            opacity: 0.6;
-        }
-
-        /* Discography - Vinyl Style */
-        #music {
-            padding: 8rem 4rem;
-            background: #0a0705;
-        }
-
-        .section-header {
-            text-align: center;
-            margin-bottom: 6rem;
-        }
-
-        .section-title {
-            font-family: 'Syncopate', sans-serif;
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            color: var(--color-gold);
-        }
-
-        .album-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 4rem;
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        .album-card {
-            position: relative;
-            aspect-ratio: 1;
-            background: linear-gradient(135deg, #1a1410 0%, #2a2018 100%);
-            border-radius: 50%;
-            padding: 2rem;
-            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-            overflow: hidden;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
-        }
-
-        .album-card::before {
-            content: '';
+        .cursor-circle {
             position: absolute;
             top: 50%;
             left: 50%;
-            width: 30%;
-            height: 30%;
-            background: #0a0705;
-            border-radius: 50%;
             transform: translate(-50%, -50%);
-            border: 2px solid var(--color-gold);
-        }
-
-        .album-card:hover {
-            transform: scale(1.05) rotate(5deg);
-        }
-
-        .album-cover {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+            width: 40px;
+            height: 40px;
+            border: 1px solid rgba(250, 250, 250, 0.5);
             border-radius: 50%;
-            filter: sepia(20%) contrast(1.1);
-            transition: filter 0.3s ease;
-        }
-
-        .album-card:hover .album-cover {
-            filter: sepia(0%) contrast(1.2);
-            animation: spin 4s linear infinite;
-        }
-
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        .album-info {
-            position: absolute;
-            bottom: -100%;
-            left: 0;
-            width: 100%;
-            padding: 2rem;
-            background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
-            transition: bottom 0.4s ease;
-            text-align: center;
-        }
-
-        .album-card:hover .album-info {
-            bottom: 0;
-        }
-
-        .album-title {
-            font-family: 'Cinzel', serif;
-            font-size: 1.5rem;
-            color: var(--color-gold);
-            margin-bottom: 0.5rem;
-        }
-
-        .album-year {
-            font-family: 'Syncopate', sans-serif;
-            font-size: 0.9rem;
-            opacity: 0.6;
-        }
-
-        /* Tour Dates - Timeline */
-        #tour {
-            padding: 8rem 4rem;
-            background: linear-gradient(180deg, #0a0705 0%, #15100c 100%);
-            position: relative;
-        }
-
-        .timeline {
-            max-width: 1000px;
-            margin: 0 auto;
-            position: relative;
-        }
-
-        .timeline::before {
-            content: '';
-            position: absolute;
-            left: 50%;
-            top: 0;
-            bottom: 0;
-            width: 2px;
-            background: linear-gradient(to bottom, transparent, var(--color-gold), transparent);
-            transform: translateX(-50%);
-        }
-
-        .tour-date {
-            display: grid;
-            grid-template-columns: 1fr auto 1fr;
-            gap: 3rem;
-            margin-bottom: 4rem;
-            align-items: center;
+            transition: all 0.3s ease;
             opacity: 0;
-            transform: translateY(50px);
         }
 
-        .tour-date:nth-child(even) .tour-info {
-            grid-column: 3;
-            text-align: left;
+        .cursor.hover .cursor-dot {
+            transform: scale(0);
+            opacity: 0;
         }
 
-        .tour-date:nth-child(even) .tour-date-badge {
-            grid-column: 1;
-            text-align: right;
+        .cursor.hover .cursor-circle {
+            width: var(--cursor-hover-size);
+            height: var(--cursor-hover-size);
+            opacity: 1;
+            background: rgba(250, 250, 250, 0.1);
+            backdrop-filter: blur(2px);
         }
 
-        .tour-date-badge {
-            font-family: 'Syncopate', sans-serif;
-            font-size: 1.2rem;
-            color: var(--color-gold);
-            text-align: right;
+        .cursor.view .cursor-circle::after {
+            content: 'VIEW';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 10px;
+            letter-spacing: 0.2em;
+            font-weight: 500;
         }
 
-        .tour-node {
-            width: 20px;
-            height: 20px;
-            background: var(--color-guitar);
-            border: 3px solid var(--color-gold);
-            border-radius: 50%;
-            position: relative;
-            z-index: 10;
-            transition: all 0.3s ease;
+        .cursor.play .cursor-circle::after {
+            content: 'PLAY';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 10px;
+            letter-spacing: 0.2em;
+            font-weight: 500;
         }
 
-        .tour-date:hover .tour-node {
-            background: var(--color-gold);
-            transform: scale(1.5);
-            box-shadow: 0 0 30px rgba(212, 175, 55, 0.6);
+        /* Noise Texture Overlay */
+        .noise {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9998;
+            opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
         }
 
-        .tour-info h3 {
-            font-family: 'Cinzel', serif;
-            font-size: 1.8rem;
-            margin-bottom: 0.5rem;
-            color: var(--color-vocal);
+        /* Selection */
+        ::selection {
+            background: #c9a87c;
+            color: #0a0a0a;
         }
 
-        .tour-location {
-            font-size: 1rem;
-            opacity: 0.7;
-            margin-bottom: 1rem;
-        }
-
-        .tour-btn {
-            display: inline-block;
-            padding: 0.8rem 2rem;
-            border: 1px solid var(--color-gold);
-            color: var(--color-gold);
-            text-decoration: none;
-            font-family: 'Syncopate', sans-serif;
-            font-size: 0.8rem;
-            letter-spacing: 0.1em;
-            transition: all 0.3s ease;
-            position: relative;
+        /* Text Reveal Animation Classes */
+        .line-mask {
             overflow: hidden;
+            display: block;
         }
 
-        .tour-btn::before {
+        .line-mask span {
+            display: block;
+            transform: translateY(100%);
+        }
+
+        /* Magnetic Button */
+        .magnetic-btn {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem 3rem;
+            border: 1px solid rgba(250, 250, 250, 0.2);
+            overflow: hidden;
+            transition: border-color 0.3s ease;
+        }
+
+        .magnetic-btn::before {
             content: '';
             position: absolute;
             top: 0;
-            left: -100%;
+            left: 0;
             width: 100%;
             height: 100%;
-            background: var(--color-gold);
-            transition: left 0.3s ease;
-            z-index: -1;
+            background: #c9a87c;
+            transform: translateY(100%);
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        .tour-btn:hover {
-            color: var(--color-guitar);
+        .magnetic-btn:hover::before {
+            transform: translateY(0);
         }
 
-        .tour-btn:hover::before {
-            left: 0;
-        }
-
-        /* Gallery - Parallax Masonry */
-        #gallery {
-            padding: 8rem 4rem;
-            background: #0f0c0b;
-        }
-
-        .gallery-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 2rem;
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        .gallery-item {
+        .magnetic-btn span {
             position: relative;
-            overflow: hidden;
-            border-radius: 4px;
-            transition: transform 0.4s ease;
+            z-index: 1;
+            transition: color 0.4s ease;
+            font-size: 0.75rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
         }
 
-        .gallery-item:nth-child(2) {
+        .magnetic-btn:hover span {
+            color: #0a0a0a;
+        }
+
+        /* Image Reveal */
+        .img-reveal {
+            clip-path: polygon(0 100%, 100% 100%, 100% 100%, 0 100%);
+            transition: clip-path 1s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .img-reveal.revealed {
+            clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+        }
+
+        /* Horizontal Scroll Section */
+        .horizontal-section {
+            display: flex;
+            flex-wrap: nowrap;
+            width: fit-content;
+        }
+
+        /* Link Hover Effect */
+        .link-hover {
+            position: relative;
+            display: inline-block;
+            overflow: hidden;
+        }
+
+        .link-hover::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: currentColor;
+            transform: scaleX(0);
+            transform-origin: right;
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .link-hover:hover::after {
+            transform: scaleX(1);
+            transform-origin: left;
+        }
+
+        /* Menu Overlay */
+        .menu-overlay {
+            position: fixed;
+            inset: 0;
+            background: #0a0a0a;
+            z-index: 100;
+            transform: translateY(100%);
+            transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .menu-overlay.active {
+            transform: translateY(0);
+        }
+
+        .menu-link {
+            font-size: clamp(2rem, 8vw, 6rem);
+            font-family: 'Playfair Display', serif;
+            opacity: 0.3;
+            transition: all 0.4s ease;
+            display: block;
+            line-height: 1.2;
+        }
+
+        .menu-link:hover {
+            opacity: 1;
+            padding-left: 2rem;
+            color: #c9a87c;
+        }
+
+        /* Scrolling Marquee */
+        .marquee {
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        .marquee-content {
+            display: inline-block;
+            animation: marquee 20s linear infinite;
+        }
+
+        @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        /* Stagger Grid */
+        .stagger-grid > *:nth-child(2) {
             margin-top: 4rem;
         }
-
-        .gallery-item:nth-child(3) {
-            margin-top: 2rem;
+        .stagger-grid > *:nth-child(3) {
+            margin-top: 8rem;
         }
 
-        .gallery-item:hover {
-            transform: translateY(-10px);
-            z-index: 10;
+        /* Hide scrollbar for Lenis */
+        html.lenis, html.lenis body {
+            height: auto;
         }
 
-        .gallery-img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            filter: grayscale(30%) sepia(20%);
-            transition: all 0.4s ease;
+        .lenis.lenis-smooth {
+            scroll-behavior: auto !important;
         }
 
-        .gallery-item:hover .gallery-img {
-            filter: grayscale(0%) sepia(0%);
-            transform: scale(1.1);
+        .lenis.lenis-smooth [data-lenis-prevent] {
+            overscroll-behavior: contain;
         }
 
-        .gallery-overlay {
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
-            opacity: 0;
-            transition: opacity 0.4s ease;
-            display: flex;
-            align-items: flex-end;
-            padding: 2rem;
-        }
-
-        .gallery-item:hover .gallery-overlay {
-            opacity: 1;
-        }
-
-        /* Contact - Interactive Form */
-        #contact {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 4rem;
-            background: radial-gradient(circle at center, #1a1410 0%, #0a0705 100%);
-            position: relative;
+        .lenis.lenis-stopped {
             overflow: hidden;
         }
 
-        #contact::before {
-            content: '';
-            position: absolute;
-            width: 200%;
-            height: 200%;
-            background: repeating-linear-gradient(
-                45deg,
-                transparent,
-                transparent 10px,
-                rgba(212, 175, 55, 0.03) 10px,
-                rgba(212, 175, 55, 0.03) 20px
-            );
-            animation: bgMove 20s linear infinite;
-        }
-
-        @keyframes bgMove {
-            0% { transform: translate(0, 0); }
-            100% { transform: translate(50px, 50px); }
-        }
-
-        .contact-container {
-            max-width: 800px;
-            width: 100%;
-            position: relative;
-            z-index: 10;
-        }
-
-        .contact-title {
-            font-family: 'Syncopate', sans-serif;
-            font-size: 3rem;
-            text-align: center;
-            margin-bottom: 3rem;
-            color: var(--color-gold);
-        }
-
-        .form-group {
-            position: relative;
-            margin-bottom: 3rem;
-        }
-
-        .form-input {
-            width: 100%;
-            background: transparent;
-            border: none;
-            border-bottom: 2px solid rgba(212, 175, 55, 0.3);
-            padding: 1rem 0;
-            font-size: 1.2rem;
-            color: var(--color-vocal);
-            font-family: 'Inter', sans-serif;
-            transition: border-color 0.3s ease;
-            outline: none;
-        }
-
-        .form-input:focus {
-            border-color: var(--color-gold);
-        }
-
-        .form-label {
-            position: absolute;
-            left: 0;
-            top: 1rem;
-            font-family: 'Cinzel', serif;
-            color: rgba(244, 228, 193, 0.5);
+        .lenis.lenis-smooth iframe {
             pointer-events: none;
-            transition: all 0.3s ease;
         }
 
-        .form-input:focus + .form-label,
-        .form-input:not(:placeholder-shown) + .form-label {
-            top: -1.5rem;
-            font-size: 0.9rem;
-            color: var(--color-gold);
-        }
-
-        .submit-btn {
-            width: 100%;
-            padding: 1.5rem;
-            background: transparent;
-            border: 2px solid var(--color-gold);
-            color: var(--color-gold);
-            font-family: 'Syncopate', sans-serif;
-            font-size: 1rem;
-            letter-spacing: 0.2em;
-            cursor: none;
-            position: relative;
-            overflow: hidden;
-            transition: all 0.4s ease;
-        }
-
-        .submit-btn:hover {
-            background: var(--color-gold);
-            color: var(--color-guitar);
-            letter-spacing: 0.3em;
-        }
-
-        /* Footer */
-        footer {
-            padding: 4rem;
-            text-align: center;
-            background: #050403;
-            border-top: 1px solid rgba(212, 175, 55, 0.1);
-        }
-
-        .social-links {
-            display: flex;
-            justify-content: center;
-            gap: 3rem;
-            margin-bottom: 2rem;
-        }
-
-        .social-links a {
-            color: var(--color-vocal);
-            text-decoration: none;
-            font-family: 'Syncopate', sans-serif;
-            font-size: 0.9rem;
-            letter-spacing: 0.1em;
-            transition: color 0.3s ease;
-            position: relative;
-        }
-
-        .social-links a::after {
-            content: '';
-            position: absolute;
-            bottom: -5px;
-            left: 0;
-            width: 0;
-            height: 1px;
-            background: var(--color-gold);
-            transition: width 0.3s ease;
-        }
-
-        .social-links a:hover {
-            color: var(--color-gold);
-        }
-
-        .social-links a:hover::after {
-            width: 100%;
-        }
-
-        .copyright {
-            font-size: 0.9rem;
-            opacity: 0.5;
-            letter-spacing: 0.1em;
-        }
-
-        /* Mobile Responsive */
-        @media (max-width: 768px) {
-            .cursor, .cursor-dot { display: none; }
-            * { cursor: auto; }
-            
-            nav { padding: 1rem 2rem; }
-            .nav-links { display: none; }
-            
-            #persona { grid-template-columns: 1fr; }
-            .persona-side { border-right: none; border-bottom: 1px solid rgba(212, 175, 55, 0.2); }
-            
-            .gallery-grid { grid-template-columns: 1fr; }
-            .gallery-item:nth-child(2), .gallery-item:nth-child(3) { margin-top: 0; }
-            
-            .timeline::before { left: 2rem; }
-            .tour-date { grid-template-columns: 1fr; gap: 1rem; }
-            .tour-date-badge, .tour-info { text-align: left !important; grid-column: 1 !important; padding-left: 4rem; }
+        /* Mobile cursor disable */
+        @media (pointer: coarse) {
+            body { cursor: auto; }
+            .cursor { display: none; }
         }
     </style>
 </head>
 <body>
 
-    <!-- Custom Cursor -->
-    <div class="cursor"></div>
-    <div class="cursor-dot"></div>
+    <!-- Noise Texture -->
+    <div class="noise"></div>
 
-    <!-- Navigation -->
-    <nav>
-        <div class="logo">ELARA</div>
-        <ul class="nav-links">
-            <li><a href="#persona">Artist</a></li>
-            <li><a href="#music">Music</a></li>
-            <li><a href="#tour">Tour</a></li>
-            <li><a href="#gallery">Gallery</a></li>
-            <li><a href="#contact">Contact</a></li>
-        </ul>
-    </nav>
+    <!-- Custom Cursor -->
+    <div class="cursor">
+        <div class="cursor-dot"></div>
+        <div class="cursor-circle"></div>
+    </div>
+
+    <!-- Menu Overlay -->
+    <div class="menu-overlay" id="menuOverlay">
+        <div class="h-full flex flex-col justify-center px-8 md:px-20">
+            <nav class="space-y-4">
+                <a href="#work" class="menu-link" data-cursor="hover">Work</a>
+                <a href="#about" class="menu-link" data-cursor="hover">About</a>
+                <a href="#discography" class="menu-link" data-cursor="hover">Discography</a>
+                <a href="#tour" class="menu-link" data-cursor="hover">Tour</a>
+                <a href="#contact" class="menu-link" data-cursor="hover">Contact</a>
+            </nav>
+            <div class="absolute bottom-10 left-8 md:left-20 flex gap-8 text-xs tracking-ultra-wide opacity-50">
+                <a href="#" class="link-hover" data-cursor="hover">INSTAGRAM</a>
+                <a href="#" class="link-hover" data-cursor="hover">SPOTIFY</a>
+                <a href="#" class="link-hover" data-cursor="hover">YOUTUBE</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="fixed top-0 left-0 w-full z-50 mix-blend-difference px-6 md:px-12 py-8 flex justify-between items-center">
+        <a href="#" class="text-xl font-serif italic tracking-wide" data-cursor="hover">Elara</a>
+        
+        <button id="menuBtn" class="group flex items-center gap-4" data-cursor="hover">
+            <span class="text-xs tracking-ultra-wide hidden md:block">MENU</span>
+            <div class="w-8 h-[2px] bg-current relative transition-all duration-300 group-hover:w-10">
+                <span class="absolute top-[-6px] right-0 w-full h-[2px] bg-current transition-all duration-300 group-hover:top-[-8px]"></span>
+                <span class="absolute top-[6px] right-0 w-2/3 h-[2px] bg-current transition-all duration-300 group-hover:top-[8px] group-hover:w-full"></span>
+            </div>
+        </button>
+    </header>
 
     <!-- Hero Section -->
-    <section id="hero">
-        <canvas id="guitar-canvas"></canvas>
-        <div class="hero-content">
-            <h1 class="hero-title">ELARA</h1>
-            <p class="hero-subtitle">Strings & Soul</p>
+    <section class="relative min-h-screen flex items-center justify-center overflow-hidden">
+        <!-- Background Image with Parallax -->
+        <div class="absolute inset-0 z-0">
+            <div class="absolute inset-0 bg-gradient-to-b from-transparent via-elara-black/50 to-elara-black z-10"></div>
+            <img src="https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=1920&q=80" 
+                 alt="Performance" 
+                 class="w-full h-full object-cover scale-110"
+                 id="heroImage">
         </div>
-        <div class="scroll-indicator">
-            <span style="font-family: 'Cinzel', serif; font-size: 0.8rem; letter-spacing: 0.2em;">SCROLL</span>
-            <div class="scroll-line"></div>
-        </div>
-    </section>
 
-    <!-- Dual Persona Section -->
-    <section id="persona">
-        <div class="persona-side persona-guitar">
-            <div class="persona-icon">🎸</div>
-            <h2 class="persona-title">The Guitarist</h2>
-            <p class="persona-desc">
-                Fingerstyle virtuoso blending classical precision with raw blues energy. 
-                From intimate acoustic sessions to electrifying solos, every note tells a story 
-                carved from years of dedication to the craft.
+        <div class="relative z-20 text-center px-6 max-w-6xl mx-auto">
+            <p class="text-xs tracking-[0.5em] uppercase mb-8 opacity-70 overflow-hidden">
+                <span class="inline-block" id="heroSubtitle">Guitarist & Vocalist</span>
             </p>
-            <div class="persona-stats">
-                <div class="stat">
-                    <span class="stat-number">15+</span>
-                    <span class="stat-label">Years</span>
+            
+            <h1 class="font-serif text-[12vw] md:text-[10vw] leading-[0.9] mb-12 overflow-hidden">
+                <span class="block line-mask"><span>ELARA</span></span>
+            </h1>
+
+            <div class="flex flex-col md:flex-row items-center justify-center gap-8 md:gap-16 text-xs tracking-ultra-wide opacity-70">
+                <span>New Album Out Now</span>
+                <span class="hidden md:block w-12 h-[1px] bg-current"></span>
+                <span>World Tour 2025</span>
+            </div>
+        </div>
+
+        <div class="absolute bottom-12 left-1/2 -translate-x-1/2 z-20">
+            <div class="w-[1px] h-20 bg-gradient-to-b from-elara-accent to-transparent animate-pulse"></div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-32 md:py-48 px-6 md:px-12 bg-elara-black relative">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-24">
+            
+            <!-- Sticky Image -->
+            <div class="md:col-span-5 relative">
+                <div class="sticky top-32">
+                    <div class="aspect-[3/4] overflow-hidden" data-cursor="view">
+                        <img src="https://images.unsplash.com/photo-1508854710579-5cecc3a9ff17?w=800&q=80" 
+                             alt="Portrait" 
+                             class="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-1000 scale-105 hover:scale-100">
+                    </div>
+                    <div class="mt-8 flex justify-between items-center text-xs tracking-ultra-wide text-elara-gray">
+                        <span>EST. 2018</span>
+                        <span>BASED IN LONDON</span>
+                    </div>
                 </div>
-                <div class="stat">
-                    <span class="stat-number">3</span>
-                    <span class="stat-label">Albums</span>
+            </div>
+
+            <!-- Content -->
+            <div class="md:col-span-7 md:pt-32">
+                <h2 class="font-serif text-4xl md:text-6xl leading-tight mb-12">
+                    <span class="line-mask"><span>Crafting sonic</span></span>
+                    <span class="line-mask"><span class="italic text-elara-accent">landscapes</span></span>
+                    <span class="line-mask"><span>that blur the lines</span></span>
+                    <span class="line-mask"><span>between intimacy</span></span>
+                    <span class="line-mask"><span>and grandeur.</span></span>
+                </h2>
+
+                <div class="space-y-8 text-elara-gray leading-relaxed max-w-lg">
+                    <p class="text-lg">
+                        With a foundation in classical guitar and a voice that traverses three octaves, 
+                        Elara creates music that exists in the liminal space between genres. 
+                        Not quite folk, not quite jazz, but something entirely her own.
+                    </p>
+                    <p>
+                        Having shared stages with artists like Nick Cave and Joni Mitchell, her approach 
+                        combines technical precision with raw emotional vulnerability. Each performance 
+                        is a journey—an exploration of silence as much as sound.
+                    </p>
                 </div>
-                <div class="stat">
-                    <span class="stat-number">200+</span>
-                    <span class="stat-label">Shows</span>
+
+                <div class="grid grid-cols-3 gap-8 mt-16 pt-16 border-t border-elara-dark">
+                    <div>
+                        <span class="block font-serif text-3xl md:text-4xl mb-2">3</span>
+                        <span class="text-xs tracking-ultra-wide text-elara-gray">STUDIO ALBUMS</span>
+                    </div>
+                    <div>
+                        <span class="block font-serif text-3xl md:text-4xl mb-2">150+</span>
+                        <span class="text-xs tracking-ultra-wide text-elara-gray">LIVE SHOWS</span>
+                    </div>
+                    <div>
+                        <span class="block font-serif text-3xl md:text-4xl mb-2">2</span>
+                        <span class="text-xs tracking-ultra-wide text-elara-gray">GRAMMY NODS</span>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="persona-side persona-vocal">
-            <div class="persona-icon">🎙</div>
-            <h2 class="persona-title">The Vocalist</h2>
-            <p class="persona-desc">
-                A voice that traverses genres—haunting folk melodies, powerful rock anthems, 
-                and soulful jazz improvisations. Three octaves of emotional range delivering 
-                lyrics that resonate long after the final note fades.
+    </section>
+
+    <!-- Discography - Horizontal Scroll -->
+    <section id="discography" class="py-32 bg-elara-dark overflow-hidden">
+        <div class="px-6 md:px-12 mb-16 flex justify-between items-end">
+            <h2 class="font-serif text-5xl md:text-7xl">Discography</h2>
+            <span class="text-xs tracking-ultra-wide text-elara-gray hidden md:block">SCROLL TO EXPLORE</span>
+        </div>
+
+        <div class="discography-wrapper" id="horizontalScroll">
+            <div class="horizontal-section gap-8 px-6 md:px-12 pb-12">
+                
+                <!-- Album 1 -->
+                <div class="w-[80vw] md:w-[40vw] flex-shrink-0 group" data-cursor="play">
+                    <div class="aspect-square bg-elara-black mb-6 overflow-hidden relative">
+                        <img src="https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=800&q=80" 
+                             alt="Album Cover" 
+                             class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                        <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                            <div class="w-20 h-20 rounded-full border border-white/50 flex items-center justify-center">
+                                <div class="w-0 h-0 border-t-[8px] border-t-transparent border-l-[12px] border-l-white border-b-[8px] border-b-transparent ml-1"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h3 class="font-serif text-2xl mb-1">Nocturnes</h3>
+                            <p class="text-elara-gray text-sm">2024</p>
+                        </div>
+                        <span class="text-xs tracking-ultra-wide text-elara-accent border border-elara-accent/30 px-3 py-1">NEW</span>
+                    </div>
+                </div>
+
+                <!-- Album 2 -->
+                <div class="w-[80vw] md:w-[40vw] flex-shrink-0 group" data-cursor="play">
+                    <div class="aspect-square bg-elara-black mb-6 overflow-hidden relative">
+                        <img src="https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=800&q=80" 
+                             alt="Album Cover" 
+                             class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                    </div>
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h3 class="font-serif text-2xl mb-1">Velvet Silence</h3>
+                            <p class="text-elara-gray text-sm">2022</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Album 3 -->
+                <div class="w-[80vw] md:w-[40vw] flex-shrink-0 group" data-cursor="play">
+                    <div class="aspect-square bg-elara-black mb-6 overflow-hidden relative">
+                        <img src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=800&q=80" 
+                             alt="Album Cover" 
+                             class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                    </div>
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h3 class="font-serif text-2xl mb-1">Echoes</h3>
+                            <p class="text-elara-gray text-sm">2019</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Spacer -->
+                <div class="w-[20vw] flex-shrink-0"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tour Dates - Minimal List -->
+    <section id="tour" class="py-32 md:py-48 px-6 md:px-12 bg-elara-black">
+        <div class="max-w-5xl mx-auto">
+            <h2 class="font-serif text-5xl md:text-7xl mb-24 text-center">Live Performances</h2>
+
+            <div class="space-y-0" id="tourList">
+                <!-- Tour items will be injected via JS for better hover effects -->
+            </div>
+
+            <div class="mt-16 text-center">
+                <button class="magnetic-btn" data-cursor="hover">
+                    <span>View All Dates</span>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Gallery - Asymmetric Grid -->
+    <section id="gallery" class="py-32 px-6 md:px-12 bg-elara-dark">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 stagger-grid">
+                <div class="img-reveal aspect-[4/5]" data-cursor="view">
+                    <img src="https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?w=800&q=80" class="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700" alt="Gallery 1">
+                </div>
+                <div class="img-reveal aspect-[3/4]" data-cursor="view">
+                    <img src="https://images.unsplash.com/photo-1501386761578-eac5c94b800a?w=800&q=80" class="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700" alt="Gallery 2">
+                </div>
+                <div class="img-reveal aspect-[4/5]" data-cursor="view">
+                    <img src="https://images.unsplash.com/photo-1511735111819-9a3f77ebd235?w=800&q=80" class="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700" alt="Gallery 3">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact - Split Screen -->
+    <section id="contact" class="min-h-screen flex flex-col md:flex-row">
+        <div class="w-full md:w-1/2 bg-elara-black p-12 md:p-24 flex flex-col justify-center">
+            <h2 class="font-serif text-5xl md:text-7xl mb-8">Get in Touch</h2>
+            <p class="text-elara-gray mb-12 max-w-md">
+                For booking inquiries, press opportunities, or just to say hello. 
+                Response time is typically 48 hours.
             </p>
-            <div class="persona-stats">
-                <div class="stat">
-                    <span class="stat-number">3</span>
-                    <span class="stat-label">Octaves</span>
-                </div>
-                <div class="stat">
-                    <span class="stat-number">50+</span>
-                    <span class="stat-label">Originals</span>
-                </div>
-                <div class="stat">
-                    <span class="stat-number">5</span>
-                    <span class="stat-label">Awards</span>
-                </div>
-            </div>
-        </div>
-    </section>
 
-    <!-- Discography -->
-    <section id="music">
-        <div class="section-header">
-            <h2 class="section-title">DISCOGRAPHY</h2>
-            <p style="font-family: 'Cinzel', serif; opacity: 0.7;">Vinyl Collection</p>
-        </div>
-        <div class="album-grid">
-            <div class="album-card">
-                <img src="https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=600&h=600&fit=crop" alt="Album 1" class="album-cover">
-                <div class="album-info">
-                    <h3 class="album-title">Midnight Wood</h3>
-                    <p class="album-year">2023</p>
+            <form class="space-y-8 max-w-md" id="contactForm">
+                <div class="relative">
+                    <input type="text" id="name" required 
+                           class="w-full bg-transparent border-b border-elara-dark py-4 text-elara-light focus:outline-none focus:border-elara-accent transition-colors peer placeholder-transparent">
+                    <label for="name" 
+                           class="absolute left-0 top-4 text-elara-gray transition-all peer-focus:-top-4 peer-focus:text-xs peer-focus:text-elara-accent peer-[:not(:placeholder-shown)]:-top-4 peer-[:not(:placeholder-shown)]:text-xs">
+                        Name
+                    </label>
                 </div>
-            </div>
-            <div class="album-card">
-                <img src="https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=600&h=600&fit=crop" alt="Album 2" class="album-cover">
-                <div class="album-info">
-                    <h3 class="album-title">Golden Hour</h3>
-                    <p class="album-year">2021</p>
-                </div>
-            </div>
-            <div class="album-card">
-                <img src="https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=600&h=600&fit=crop" alt="Album 3" class="album-cover">
-                <div class="album-info">
-                    <h3 class="album-title">Acoustic Soul</h3>
-                    <p class="album-year">2019</p>
-                </div>
-            </div>
-        </div>
-    </section>
 
-    <!-- Tour Dates -->
-    <section id="tour">
-        <div class="section-header">
-            <h2 class="section-title">TOUR DATES</h2>
-            <p style="font-family: 'Cinzel', serif; opacity: 0.7;">2024 World Tour</p>
-        </div>
-        <div class="timeline">
-            <div class="tour-date">
-                <div class="tour-date-badge">MAR 15</div>
-                <div class="tour-node"></div>
-                <div class="tour-info">
-                    <h3>The Royal Theater</h3>
-                    <p class="tour-location">London, United Kingdom</p>
-                    <a href="#" class="tour-btn">GET TICKETS</a>
+                <div class="relative">
+                    <input type="email" id="email" required 
+                           class="w-full bg-transparent border-b border-elara-dark py-4 text-elara-light focus:outline-none focus:border-elara-accent transition-colors peer placeholder-transparent">
+                    <label for="email" 
+                           class="absolute left-0 top-4 text-elara-gray transition-all peer-focus:-top-4 peer-focus:text-xs peer-focus:text-elara-accent peer-[:not(:placeholder-shown)]:-top-4 peer-[:not(:placeholder-shown)]:text-xs">
+                        Email
+                    </label>
                 </div>
-            </div>
-            <div class="tour-date">
-                <div class="tour-info">
-                    <h3>Madison Square Garden</h3>
-                    <p class="tour-location">New York, USA</p>
-                    <a href="#" class="tour-btn">GET TICKETS</a>
-                </div>
-                <div class="tour-node"></div>
-                <div class="tour-date-badge">APR 02</div>
-            </div>
-            <div class="tour-date">
-                <div class="tour-date-badge">APR 18</div>
-                <div class="tour-node"></div>
-                <div class="tour-info">
-                    <h3>Sydney Opera House</h3>
-                    <p class="tour-location">Sydney, Australia</p>
-                    <a href="#" class="tour-btn">GET TICKETS</a>
-                </div>
-            </div>
-            <div class="tour-date">
-                <div class="tour-info">
-                    <h3>Tokyo Dome</h3>
-                    <p class="tour-location">Tokyo, Japan</p>
-                    <a href="#" class="tour-btn">GET TICKETS</a>
-                </div>
-                <div class="tour-node"></div>
-                <div class="tour-date-badge">MAY 05</div>
-            </div>
-        </div>
-    </section>
 
-    <!-- Gallery -->
-    <section id="gallery">
-        <div class="section-header">
-            <h2 class="section-title">VISUALS</h2>
-            <p style="font-family: 'Cinzel', serif; opacity: 0.7;">Live Moments</p>
-        </div>
-        <div class="gallery-grid">
-            <div class="gallery-item">
-                <img src="https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?w=800&h=1000&fit=crop" alt="Performance" class="gallery-img">
-                <div class="gallery-overlay">
-                    <p style="font-family: 'Cinzel', serif; color: var(--color-gold);">Live at Coachella 2023</p>
+                <div class="relative">
+                    <textarea id="message" rows="4" required 
+                              class="w-full bg-transparent border-b border-elara-dark py-4 text-elara-light focus:outline-none focus:border-elara-accent transition-colors peer placeholder-transparent resize-none"></textarea>
+                    <label for="message" 
+                           class="absolute left-0 top-4 text-elara-gray transition-all peer-focus:-top-4 peer-focus:text-xs peer-focus:text-elara-accent peer-[:not(:placeholder-shown)]:-top-4 peer-[:not(:placeholder-shown)]:text-xs">
+                        Message
+                    </label>
                 </div>
-            </div>
-            <div class="gallery-item">
-                <img src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=800&h=600&fit=crop" alt="Studio" class="gallery-img">
-                <div class="gallery-overlay">
-                    <p style="font-family: 'Cinzel', serif; color: var(--color-gold);">Studio Sessions</p>
-                </div>
-            </div>
-            <div class="gallery-item">
-                <img src="https://images.unsplash.com/photo-1508854710579-5cecc3a9ff17?w=800&h=900&fit=crop" alt="Backstage" class="gallery-img">
-                <div class="gallery-overlay">
-                    <p style="font-family: 'Cinzel', serif; color: var(--color-gold);">Behind the Scenes</p>
-                </div>
-            </div>
-        </div>
-    </section>
 
-    <!-- Contact -->
-    <section id="contact">
-        <div class="contact-container">
-            <h2 class="contact-title">BOOKING & INQUIRIES</h2>
-            <form id="booking-form">
-                <div class="form-group">
-                    <input type="text" class="form-input" placeholder=" " required>
-                    <label class="form-label">Your Name</label>
-                </div>
-                <div class="form-group">
-                    <input type="email" class="form-input" placeholder=" " required>
-                    <label class="form-label">Email Address</label>
-                </div>
-                <div class="form-group">
-                    <input type="text" class="form-input" placeholder=" ">
-                    <label class="form-label">Event Type</label>
-                </div>
-                <div class="form-group">
-                    <textarea class="form-input" rows="4" placeholder=" " style="resize: none;"></textarea>
-                    <label class="form-label">Message</label>
-                </div>
-                <button type="submit" class="submit-btn">SEND MESSAGE</button>
+                <button type="submit" class="magnetic-btn mt-8" data-cursor="hover">
+                    <span>Send Message</span>
+                </button>
             </form>
+        </div>
+
+        <div class="w-full md:w-1/2 relative overflow-hidden min-h-[50vh] md:min-h-auto">
+            <img src="https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?w=1200&q=80" 
+                 alt="Contact" 
+                 class="absolute inset-0 w-full h-full object-cover grayscale">
+            <div class="absolute inset-0 bg-elara-black/20"></div>
         </div>
     </section>
 
     <!-- Footer -->
-    <footer>
-        <div class="social-links">
-            <a href="#">INSTAGRAM</a>
-            <a href="#">SPOTIFY</a>
-            <a href="#">YOUTUBE</a>
-            <a href="#">APPLE MUSIC</a>
+    <footer class="bg-elara-black border-t border-elara-dark py-24 px-6 md:px-12">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start gap-12">
+            <div>
+                <h3 class="font-serif text-4xl mb-4 italic">Elara</h3>
+                <p class="text-elara-gray text-sm max-w-xs">
+                    Creating music that resonates with the spaces between notes.
+                </p>
+            </div>
+
+            <div class="flex gap-16 text-xs tracking-ultra-wide">
+                <div class="flex flex-col gap-4">
+                    <span class="text-elara-gray mb-2">SOCIAL</span>
+                    <a href="#" class="link-hover" data-cursor="hover">INSTAGRAM</a>
+                    <a href="#" class="link-hover" data-cursor="hover">SPOTIFY</a>
+                    <a href="#" class="link-hover" data-cursor="hover">YOUTUBE</a>
+                </div>
+                <div class="flex flex-col gap-4">
+                    <span class="text-elara-gray mb-2">LEGAL</span>
+                    <a href="#" class="link-hover" data-cursor="hover">PRIVACY</a>
+                    <a href="#" class="link-hover" data-cursor="hover">TERMS</a>
+                </div>
+            </div>
         </div>
-        <p class="copyright">© 2024 ELARA. ALL RIGHTS RESERVED.</p>
+        <div class="max-w-7xl mx-auto mt-24 pt-8 border-t border-elara-dark flex justify-between items-center text-xs text-elara-gray">
+            <span>© 2025 ELARA. ALL RIGHTS RESERVED.</span>
+            <span>DESIGNED WITH INTENTION</span>
+        </div>
     </footer>
 
     <script>
-        // Register GSAP ScrollTrigger
-        gsap.registerPlugin(ScrollTrigger);
-
-        // Custom Cursor
-        const cursor = document.querySelector('.cursor');
-        const cursorDot = document.querySelector('.cursor-dot');
-        
-        document.addEventListener('mousemove', (e) => {
-            gsap.to(cursor, { x: e.clientX - 10, y: e.clientY - 10, duration: 0.1 });
-            gsap.to(cursorDot, { x: e.clientX - 2, y: e.clientY - 2, duration: 0.5 });
+        // Initialize Lenis for smooth scrolling
+        const lenis = new Lenis({
+            duration: 1.2,
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+            direction: 'vertical',
+            gestureDirection: 'vertical',
+            smooth: true,
+            mouseMultiplier: 1,
+            smoothTouch: false,
+            touchMultiplier: 2,
+            infinite: false,
         });
 
-        document.querySelectorAll('a, button, .album-card, .gallery-item, .tour-date').forEach(el => {
+        function raf(time) {
+            lenis.raf(time);
+            requestAnimationFrame(raf);
+        }
+        requestAnimationFrame(raf);
+
+        // GSAP ScrollTrigger integration with Lenis
+        lenis.on('scroll', ScrollTrigger.update);
+        gsap.ticker.add((time) => {
+            lenis.raf(time * 1000);
+        });
+        gsap.ticker.lagSmoothing(0);
+
+        // Custom Cursor Logic
+        const cursor = document.querySelector('.cursor');
+        const cursorDot = document.querySelector('.cursor-dot');
+        const cursorCircle = document.querySelector('.cursor-circle');
+        let mouseX = 0, mouseY = 0;
+        let cursorX = 0, cursorY = 0;
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        });
+
+        function animateCursor() {
+            cursorX += (mouseX - cursorX) * 0.1;
+            cursorY += (mouseY - cursorY) * 0.1;
+            
+            cursor.style.left = cursorX + 'px';
+            cursor.style.top = cursorY + 'px';
+            
+            requestAnimationFrame(animateCursor);
+        }
+        animateCursor();
+
+        // Cursor states
+        document.querySelectorAll('[data-cursor="hover"]').forEach(el => {
             el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
             el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
         });
 
-        // Guitar Strings Canvas Animation
-        const canvas = document.getElementById('guitar-canvas');
-        const ctx = canvas.getContext('2d');
-        let width, height;
-        let strings = [];
-        let mouse = { x: 0, y: 0 };
-
-        function resize() {
-            width = canvas.width = window.innerWidth;
-            height = canvas.height = window.innerHeight;
-            initStrings();
-        }
-
-        class GuitarString {
-            constructor(x, baseY) {
-                this.x = x;
-                this.baseY = baseY;
-                this.points = [];
-                this.numPoints = 20;
-                this.amplitude = 0;
-                this.damping = 0.98;
-                this.frequency = 0.02;
-                
-                for (let i = 0; i < this.numPoints; i++) {
-                    this.points.push({ y: 0, velocity: 0 });
-                }
-            }
-
-            pluck() {
-                this.amplitude = 50;
-            }
-
-            update() {
-                // Mouse interaction
-                const dist = Math.abs(mouse.x - this.x);
-                if (dist < 50 && Math.abs(mouse.y - this.baseY) < 100) {
-                    this.amplitude = 30;
-                }
-
-                this.amplitude *= this.damping;
-                
-                for (let i = 0; i < this.numPoints; i++) {
-                    const targetY = Math.sin(i * this.frequency + Date.now() * 0.005) * this.amplitude;
-                    this.points[i].y += (targetY - this.points[i].y) * 0.1;
-                }
-            }
-
-            draw() {
-                ctx.beginPath();
-                ctx.strokeStyle = 'rgba(212, 175, 55, 0.3)';
-                ctx.lineWidth = 1;
-                
-                ctx.moveTo(this.x, this.baseY);
-                for (let i = 0; i < this.numPoints; i++) {
-                    const x = this.x;
-                    const y = this.baseY + (i / (this.numPoints - 1)) * height * 0.6 - height * 0.3 + this.points[i].y;
-                    ctx.lineTo(x, y);
-                }
-                ctx.stroke();
-            }
-        }
-
-        function initStrings() {
-            strings = [];
-            const numStrings = 6;
-            const spacing = width / (numStrings + 1);
-            for (let i = 1; i <= numStrings; i++) {
-                strings.push(new GuitarString(spacing * i, height / 2));
-            }
-        }
-
-        function animate() {
-            ctx.clearRect(0, 0, width, height);
-            
-            strings.forEach(string => {
-                string.update();
-                string.draw();
+        document.querySelectorAll('[data-cursor="view"]').forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                cursor.classList.add('hover', 'view');
             });
-            
-            requestAnimationFrame(animate);
-        }
-
-        window.addEventListener('resize', resize);
-        window.addEventListener('mousemove', (e) => {
-            mouse.x = e.clientX;
-            mouse.y = e.clientY;
-        });
-
-        resize();
-        animate();
-
-        // Random plucking
-        setInterval(() => {
-            if (strings.length > 0) {
-                const randomString = strings[Math.floor(Math.random() * strings.length)];
-                randomString.pluck();
-            }
-        }, 2000);
-
-        // GSAP Animations
-        gsap.from('.hero-title', {
-            y: 100,
-            opacity: 0,
-            duration: 1.5,
-            ease: 'power4.out',
-            delay: 0.5
-        });
-
-        gsap.from('.hero-subtitle', {
-            y: 50,
-            opacity: 0,
-            duration: 1.5,
-            ease: 'power4.out',
-            delay: 0.8
-        });
-
-        // Persona Section Parallax
-        gsap.utils.toArray('.persona-side').forEach(side => {
-            gsap.from(side, {
-                scrollTrigger: {
-                    trigger: side,
-                    start: 'top 80%',
-                    toggleActions: 'play none none reverse'
-                },
-                x: side.classList.contains('persona-guitar') ? -100 : 100,
-                opacity: 0,
-                duration: 1.2,
-                ease: 'power4.out'
+            el.addEventListener('mouseleave', () => {
+                cursor.classList.remove('hover', 'view');
             });
         });
 
-        // Album Cards Stagger
-        gsap.from('.album-card', {
-            scrollTrigger: {
-                trigger: '#music',
-                start: 'top 70%'
-            },
-            y: 100,
-            opacity: 0,
-            rotation: -10,
-            duration: 1,
-            stagger: 0.2,
+        document.querySelectorAll('[data-cursor="play"]').forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                cursor.classList.add('hover', 'play');
+            });
+            el.addEventListener('mouseleave', () => {
+                cursor.classList.remove('hover', 'play');
+            });
+        });
+
+        // Menu Toggle
+        const menuBtn = document.getElementById('menuBtn');
+        const menuOverlay = document.getElementById('menuOverlay');
+        let menuOpen = false;
+
+        menuBtn.addEventListener('click', () => {
+            menuOpen = !menuOpen;
+            if (menuOpen) {
+                menuOverlay.classList.add('active');
+                lenis.stop();
+            } else {
+                menuOverlay.classList.remove('active');
+                lenis.start();
+            }
+        });
+
+        // Close menu on link click
+        menuOverlay.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                menuOverlay.classList.remove('active');
+                lenis.start();
+                menuOpen = false;
+            });
+        });
+
+        // Hero Animations
+        const heroTl = gsap.timeline();
+        
+        heroTl.from('#heroImage', {
+            scale: 1.2,
+            filter: 'blur(10px)',
+            duration: 1.8,
             ease: 'power4.out'
+        })
+        .from('.line-mask span', {
+            y: '100%',
+            duration: 1.2,
+            stagger: 0.1,
+            ease: 'power4.out'
+        }, '-=1.2')
+        .from('#heroSubtitle', {
+            y: 20,
+            opacity: 0,
+            duration: 1,
+            ease: 'power4.out'
+        }, '-=0.8');
+
+        // Hero Parallax
+        gsap.to('#heroImage', {
+            yPercent: 30,
+            ease: 'none',
+            scrollTrigger: {
+                trigger: '#hero',
+                start: 'top top',
+                end: 'bottom top',
+                scrub: true
+            }
         });
 
-        // Tour Dates Animation
-        gsap.utils.toArray('.tour-date').forEach((date, i) => {
-            gsap.to(date, {
+        // Text Reveal on Scroll
+        gsap.utils.toArray('.line-mask').forEach(mask => {
+            const span = mask.querySelector('span');
+            gsap.from(span, {
+                y: '100%',
+                duration: 1,
+                ease: 'power4.out',
                 scrollTrigger: {
-                    trigger: date,
-                    start: 'top 80%',
-                    toggleActions: 'play none none reverse'
-                },
-                opacity: 1,
-                y: 0,
-                duration: 0.8,
-                delay: i * 0.1,
-                ease: 'power4.out'
-            });
-        });
-
-        // Gallery Parallax
-        gsap.utils.toArray('.gallery-item').forEach((item, i) => {
-            gsap.from(item, {
-                scrollTrigger: {
-                    trigger: item,
+                    trigger: mask,
                     start: 'top 85%',
                     toggleActions: 'play none none reverse'
-                },
-                y: 50 + (i * 30),
-                opacity: 0,
-                duration: 1,
-                ease: 'power4.out'
-            });
-            
-            // Parallax effect on scroll
-            gsap.to(item, {
-                scrollTrigger: {
-                    trigger: item,
-                    start: 'top bottom',
-                    end: 'bottom top',
-                    scrub: 1
-                },
-                y: (i % 2 === 0) ? -30 : 30,
-                ease: 'none'
-            });
-        });
-
-        // Form Interaction
-        document.getElementById('booking-form').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const btn = e.target.querySelector('.submit-btn');
-            btn.textContent = 'MESSAGE SENT';
-            btn.style.background = 'var(--color-gold)';
-            btn.style.color = 'var(--color-guitar)';
-            
-            setTimeout(() => {
-                btn.textContent = 'SEND MESSAGE';
-                btn.style.background = 'transparent';
-                btn.style.color = 'var(--color-gold)';
-                e.target.reset();
-            }, 3000);
-        });
-
-        // Smooth Scroll for Navigation
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    gsap.to(window, {
-                        duration: 1.5,
-                        scrollTo: { y: target, offsetY: 0 },
-                        ease: 'power4.inOut'
-                    });
                 }
             });
         });
 
-        // Magnetic effect for buttons
-        document.querySelectorAll('.tour-btn, .submit-btn').forEach(btn => {
+        // Image Reveal
+        gsap.utils.toArray('.img-reveal').forEach(img => {
+            ScrollTrigger.create({
+                trigger: img,
+                start: 'top 80%',
+                onEnter: () => img.classList.add('revealed'),
+                once: true
+            });
+        });
+
+        // Horizontal Scroll for Discography
+        const horizontalSection = document.querySelector('.horizontal-section');
+        const discographyWrapper = document.querySelector('.discography-wrapper');
+        
+        if (window.innerWidth > 768) {
+            gsap.to(horizontalSection, {
+                x: () => -(horizontalSection.scrollWidth - window.innerWidth + 100),
+                ease: 'none',
+                scrollTrigger: {
+                    trigger: discographyWrapper,
+                    start: 'top top',
+                    end: () => `+=${horizontalSection.scrollWidth}`,
+                    scrub: 1,
+                    pin: true,
+                    anticipatePin: 1,
+                    invalidateOnRefresh: true
+                }
+            });
+        }
+
+        // Tour Dates Data & Rendering
+        const tourDates = [
+            { date: 'MAR 24', city: 'London', venue: 'Royal Albert Hall', status: 'available' },
+            { date: 'APR 02', city: 'Paris', venue: 'L\'Olympia', status: 'available' },
+            { date: 'APR 15', city: 'Berlin', venue: 'Berghain', status: 'sold out' },
+            { date: 'APR 28', city: 'New York', venue: 'Carnegie Hall', status: 'available' },
+            { date: 'MAY 12', city: 'Tokyo', venue: 'Budokan', status: 'limited' }
+        ];
+
+        const tourList = document.getElementById('tourList');
+        
+        tourDates.forEach((show, index) => {
+            const item = document.createElement('div');
+            item.className = 'group border-t border-elara-dark py-8 cursor-pointer transition-all duration-500 hover:pl-8';
+            item.setAttribute('data-cursor', 'hover');
+            
+            item.innerHTML = `
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div class="flex items-baseline gap-8 md:gap-16">
+                        <span class="font-serif text-3xl md:text-4xl text-elara-accent">${show.date}</span>
+                        <div>
+                            <h3 class="font-serif text-2xl md:text-3xl group-hover:text-elara-accent transition-colors">${show.city}</h3>
+                            <p class="text-elara-gray mt-1">${show.venue}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-8">
+                        <span class="text-xs tracking-ultra-wide ${show.status === 'sold out' ? 'text-red-400' : show.status === 'limited' ? 'text-yellow-400' : 'text-emerald-400'} uppercase">
+                            ${show.status}
+                        </span>
+                        <div class="w-12 h-12 rounded-full border border-elara-dark flex items-center justify-center group-hover:bg-elara-accent group-hover:border-elara-accent transition-all duration-300">
+                            <svg class="w-4 h-4 transform -rotate-45 group-hover:rotate-0 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            tourList.appendChild(item);
+        });
+
+        // Magnetic Buttons
+        document.querySelectorAll('.magnetic-btn').forEach(btn => {
             btn.addEventListener('mousemove', (e) => {
                 const rect = btn.getBoundingClientRect();
                 const x = e.clientX - rect.left - rect.width / 2;
@@ -1212,7 +889,44 @@
                 });
             });
         });
+
+        // Gallery Parallax
+        gsap.utils.toArray('.stagger-grid > div').forEach((item, i) => {
+            gsap.to(item, {
+                y: -50 * (i + 1),
+                ease: 'none',
+                scrollTrigger: {
+                    trigger: '#gallery',
+                    start: 'top bottom',
+                    end: 'bottom top',
+                    scrub: 1
+                }
+            });
+        });
+
+        // Form Handling
+        document.getElementById('contactForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const btn = e.target.querySelector('button span');
+            const originalText = btn.textContent;
+            
+            btn.textContent = 'SENDING...';
+            
+            setTimeout(() => {
+                btn.textContent = 'SENT SUCCESSFULLY';
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    e.target.reset();
+                }, 2000);
+            }, 1500);
+        });
+
+        // Reduced Motion Check
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            lenis.destroy();
+            gsap.globalTimeline.clear();
+            document.querySelectorAll('.img-reveal').forEach(img => img.classList.add('revealed'));
+        }
     </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollToPlugin.min.js"></script>
 </body>
 </html>
