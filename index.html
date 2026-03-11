@@ -1,0 +1,1218 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ELARA | Guitarist & Vocalist</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;900&family=Syncopate:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <style>
+        :root {
+            --color-guitar: #1a0f0a;
+            --color-vocal: #f4e4c1;
+            --color-gold: #d4af37;
+            --color-rust: #8b4513;
+            --cursor-size: 20px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            cursor: none;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--color-guitar);
+            color: var(--color-vocal);
+            overflow-x: hidden;
+        }
+
+        /* Custom Cursor */
+        .cursor {
+            width: var(--cursor-size);
+            height: var(--cursor-size);
+            border: 2px solid var(--color-gold);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            mix-blend-mode: difference;
+            transition: transform 0.2s ease;
+        }
+
+        .cursor-dot {
+            width: 4px;
+            height: 4px;
+            background: var(--color-gold);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            mix-blend-mode: difference;
+        }
+
+        .cursor.hover {
+            transform: scale(3);
+            background: rgba(212, 175, 55, 0.1);
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 2rem 4rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            mix-blend-mode: difference;
+        }
+
+        .logo {
+            font-family: 'Syncopate', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: 0.2em;
+            color: var(--color-vocal);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 3rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            font-family: 'Cinzel', serif;
+            text-decoration: none;
+            color: var(--color-vocal);
+            font-size: 0.9rem;
+            letter-spacing: 0.1em;
+            position: relative;
+            padding: 0.5rem 0;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: var(--color-gold);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        /* Hero Section with Guitar Strings Canvas */
+        #hero {
+            height: 100vh;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        #guitar-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            mix-blend-mode: exclusion;
+        }
+
+        .hero-title {
+            font-family: 'Syncopate', sans-serif;
+            font-size: clamp(3rem, 10vw, 8rem);
+            font-weight: 900;
+            letter-spacing: -0.05em;
+            line-height: 1;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--color-vocal) 0%, var(--color-gold) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-subtitle {
+            font-family: 'Cinzel', serif;
+            font-size: 1.2rem;
+            letter-spacing: 0.5em;
+            text-transform: uppercase;
+            opacity: 0.8;
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 3rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            opacity: 0.6;
+        }
+
+        .scroll-line {
+            width: 1px;
+            height: 60px;
+            background: linear-gradient(to bottom, var(--color-gold), transparent);
+            animation: scrollPulse 2s infinite;
+        }
+
+        @keyframes scrollPulse {
+            0%, 100% { transform: scaleY(1); opacity: 0.6; }
+            50% { transform: scaleY(1.5); opacity: 1; }
+        }
+
+        /* Dual Persona Section */
+        #persona {
+            min-height: 100vh;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            position: relative;
+        }
+
+        .persona-side {
+            position: relative;
+            padding: 6rem 4rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            overflow: hidden;
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .persona-guitar {
+            background: linear-gradient(135deg, #0f0c0b 0%, #1a1410 100%);
+            border-right: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .persona-vocal {
+            background: linear-gradient(135deg, #2a2520 0%, #1f1a15 100%);
+        }
+
+        .persona-side:hover {
+            flex: 1.2;
+        }
+
+        .persona-icon {
+            width: 80px;
+            height: 80px;
+            border: 2px solid var(--color-gold);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 2rem;
+            font-size: 2rem;
+            color: var(--color-gold);
+            transition: transform 0.6s ease;
+        }
+
+        .persona-side:hover .persona-icon {
+            transform: rotate(360deg);
+        }
+
+        .persona-title {
+            font-family: 'Cinzel', serif;
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+            color: var(--color-vocal);
+        }
+
+        .persona-desc {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            opacity: 0.8;
+            max-width: 400px;
+        }
+
+        .persona-stats {
+            display: flex;
+            gap: 2rem;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(212, 175, 55, 0.3);
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-family: 'Syncopate', sans-serif;
+            font-size: 2rem;
+            color: var(--color-gold);
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            opacity: 0.6;
+        }
+
+        /* Discography - Vinyl Style */
+        #music {
+            padding: 8rem 4rem;
+            background: #0a0705;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 6rem;
+        }
+
+        .section-title {
+            font-family: 'Syncopate', sans-serif;
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: var(--color-gold);
+        }
+
+        .album-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 4rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .album-card {
+            position: relative;
+            aspect-ratio: 1;
+            background: linear-gradient(135deg, #1a1410 0%, #2a2018 100%);
+            border-radius: 50%;
+            padding: 2rem;
+            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+        }
+
+        .album-card::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 30%;
+            height: 30%;
+            background: #0a0705;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            border: 2px solid var(--color-gold);
+        }
+
+        .album-card:hover {
+            transform: scale(1.05) rotate(5deg);
+        }
+
+        .album-cover {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+            filter: sepia(20%) contrast(1.1);
+            transition: filter 0.3s ease;
+        }
+
+        .album-card:hover .album-cover {
+            filter: sepia(0%) contrast(1.2);
+            animation: spin 4s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .album-info {
+            position: absolute;
+            bottom: -100%;
+            left: 0;
+            width: 100%;
+            padding: 2rem;
+            background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+            transition: bottom 0.4s ease;
+            text-align: center;
+        }
+
+        .album-card:hover .album-info {
+            bottom: 0;
+        }
+
+        .album-title {
+            font-family: 'Cinzel', serif;
+            font-size: 1.5rem;
+            color: var(--color-gold);
+            margin-bottom: 0.5rem;
+        }
+
+        .album-year {
+            font-family: 'Syncopate', sans-serif;
+            font-size: 0.9rem;
+            opacity: 0.6;
+        }
+
+        /* Tour Dates - Timeline */
+        #tour {
+            padding: 8rem 4rem;
+            background: linear-gradient(180deg, #0a0705 0%, #15100c 100%);
+            position: relative;
+        }
+
+        .timeline {
+            max-width: 1000px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, transparent, var(--color-gold), transparent);
+            transform: translateX(-50%);
+        }
+
+        .tour-date {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 3rem;
+            margin-bottom: 4rem;
+            align-items: center;
+            opacity: 0;
+            transform: translateY(50px);
+        }
+
+        .tour-date:nth-child(even) .tour-info {
+            grid-column: 3;
+            text-align: left;
+        }
+
+        .tour-date:nth-child(even) .tour-date-badge {
+            grid-column: 1;
+            text-align: right;
+        }
+
+        .tour-date-badge {
+            font-family: 'Syncopate', sans-serif;
+            font-size: 1.2rem;
+            color: var(--color-gold);
+            text-align: right;
+        }
+
+        .tour-node {
+            width: 20px;
+            height: 20px;
+            background: var(--color-guitar);
+            border: 3px solid var(--color-gold);
+            border-radius: 50%;
+            position: relative;
+            z-index: 10;
+            transition: all 0.3s ease;
+        }
+
+        .tour-date:hover .tour-node {
+            background: var(--color-gold);
+            transform: scale(1.5);
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.6);
+        }
+
+        .tour-info h3 {
+            font-family: 'Cinzel', serif;
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+            color: var(--color-vocal);
+        }
+
+        .tour-location {
+            font-size: 1rem;
+            opacity: 0.7;
+            margin-bottom: 1rem;
+        }
+
+        .tour-btn {
+            display: inline-block;
+            padding: 0.8rem 2rem;
+            border: 1px solid var(--color-gold);
+            color: var(--color-gold);
+            text-decoration: none;
+            font-family: 'Syncopate', sans-serif;
+            font-size: 0.8rem;
+            letter-spacing: 0.1em;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tour-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--color-gold);
+            transition: left 0.3s ease;
+            z-index: -1;
+        }
+
+        .tour-btn:hover {
+            color: var(--color-guitar);
+        }
+
+        .tour-btn:hover::before {
+            left: 0;
+        }
+
+        /* Gallery - Parallax Masonry */
+        #gallery {
+            padding: 8rem 4rem;
+            background: #0f0c0b;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .gallery-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 4px;
+            transition: transform 0.4s ease;
+        }
+
+        .gallery-item:nth-child(2) {
+            margin-top: 4rem;
+        }
+
+        .gallery-item:nth-child(3) {
+            margin-top: 2rem;
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-10px);
+            z-index: 10;
+        }
+
+        .gallery-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: grayscale(30%) sepia(20%);
+            transition: all 0.4s ease;
+        }
+
+        .gallery-item:hover .gallery-img {
+            filter: grayscale(0%) sepia(0%);
+            transform: scale(1.1);
+        }
+
+        .gallery-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            display: flex;
+            align-items: flex-end;
+            padding: 2rem;
+        }
+
+        .gallery-item:hover .gallery-overlay {
+            opacity: 1;
+        }
+
+        /* Contact - Interactive Form */
+        #contact {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4rem;
+            background: radial-gradient(circle at center, #1a1410 0%, #0a0705 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        #contact::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 10px,
+                rgba(212, 175, 55, 0.03) 10px,
+                rgba(212, 175, 55, 0.03) 20px
+            );
+            animation: bgMove 20s linear infinite;
+        }
+
+        @keyframes bgMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+
+        .contact-container {
+            max-width: 800px;
+            width: 100%;
+            position: relative;
+            z-index: 10;
+        }
+
+        .contact-title {
+            font-family: 'Syncopate', sans-serif;
+            font-size: 3rem;
+            text-align: center;
+            margin-bottom: 3rem;
+            color: var(--color-gold);
+        }
+
+        .form-group {
+            position: relative;
+            margin-bottom: 3rem;
+        }
+
+        .form-input {
+            width: 100%;
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid rgba(212, 175, 55, 0.3);
+            padding: 1rem 0;
+            font-size: 1.2rem;
+            color: var(--color-vocal);
+            font-family: 'Inter', sans-serif;
+            transition: border-color 0.3s ease;
+            outline: none;
+        }
+
+        .form-input:focus {
+            border-color: var(--color-gold);
+        }
+
+        .form-label {
+            position: absolute;
+            left: 0;
+            top: 1rem;
+            font-family: 'Cinzel', serif;
+            color: rgba(244, 228, 193, 0.5);
+            pointer-events: none;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus + .form-label,
+        .form-input:not(:placeholder-shown) + .form-label {
+            top: -1.5rem;
+            font-size: 0.9rem;
+            color: var(--color-gold);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 1.5rem;
+            background: transparent;
+            border: 2px solid var(--color-gold);
+            color: var(--color-gold);
+            font-family: 'Syncopate', sans-serif;
+            font-size: 1rem;
+            letter-spacing: 0.2em;
+            cursor: none;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s ease;
+        }
+
+        .submit-btn:hover {
+            background: var(--color-gold);
+            color: var(--color-guitar);
+            letter-spacing: 0.3em;
+        }
+
+        /* Footer */
+        footer {
+            padding: 4rem;
+            text-align: center;
+            background: #050403;
+            border-top: 1px solid rgba(212, 175, 55, 0.1);
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            margin-bottom: 2rem;
+        }
+
+        .social-links a {
+            color: var(--color-vocal);
+            text-decoration: none;
+            font-family: 'Syncopate', sans-serif;
+            font-size: 0.9rem;
+            letter-spacing: 0.1em;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+
+        .social-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: var(--color-gold);
+            transition: width 0.3s ease;
+        }
+
+        .social-links a:hover {
+            color: var(--color-gold);
+        }
+
+        .social-links a:hover::after {
+            width: 100%;
+        }
+
+        .copyright {
+            font-size: 0.9rem;
+            opacity: 0.5;
+            letter-spacing: 0.1em;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .cursor, .cursor-dot { display: none; }
+            * { cursor: auto; }
+            
+            nav { padding: 1rem 2rem; }
+            .nav-links { display: none; }
+            
+            #persona { grid-template-columns: 1fr; }
+            .persona-side { border-right: none; border-bottom: 1px solid rgba(212, 175, 55, 0.2); }
+            
+            .gallery-grid { grid-template-columns: 1fr; }
+            .gallery-item:nth-child(2), .gallery-item:nth-child(3) { margin-top: 0; }
+            
+            .timeline::before { left: 2rem; }
+            .tour-date { grid-template-columns: 1fr; gap: 1rem; }
+            .tour-date-badge, .tour-info { text-align: left !important; grid-column: 1 !important; padding-left: 4rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Custom Cursor -->
+    <div class="cursor"></div>
+    <div class="cursor-dot"></div>
+
+    <!-- Navigation -->
+    <nav>
+        <div class="logo">ELARA</div>
+        <ul class="nav-links">
+            <li><a href="#persona">Artist</a></li>
+            <li><a href="#music">Music</a></li>
+            <li><a href="#tour">Tour</a></li>
+            <li><a href="#gallery">Gallery</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="hero">
+        <canvas id="guitar-canvas"></canvas>
+        <div class="hero-content">
+            <h1 class="hero-title">ELARA</h1>
+            <p class="hero-subtitle">Strings & Soul</p>
+        </div>
+        <div class="scroll-indicator">
+            <span style="font-family: 'Cinzel', serif; font-size: 0.8rem; letter-spacing: 0.2em;">SCROLL</span>
+            <div class="scroll-line"></div>
+        </div>
+    </section>
+
+    <!-- Dual Persona Section -->
+    <section id="persona">
+        <div class="persona-side persona-guitar">
+            <div class="persona-icon">🎸</div>
+            <h2 class="persona-title">The Guitarist</h2>
+            <p class="persona-desc">
+                Fingerstyle virtuoso blending classical precision with raw blues energy. 
+                From intimate acoustic sessions to electrifying solos, every note tells a story 
+                carved from years of dedication to the craft.
+            </p>
+            <div class="persona-stats">
+                <div class="stat">
+                    <span class="stat-number">15+</span>
+                    <span class="stat-label">Years</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number">3</span>
+                    <span class="stat-label">Albums</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number">200+</span>
+                    <span class="stat-label">Shows</span>
+                </div>
+            </div>
+        </div>
+        <div class="persona-side persona-vocal">
+            <div class="persona-icon">🎙</div>
+            <h2 class="persona-title">The Vocalist</h2>
+            <p class="persona-desc">
+                A voice that traverses genres—haunting folk melodies, powerful rock anthems, 
+                and soulful jazz improvisations. Three octaves of emotional range delivering 
+                lyrics that resonate long after the final note fades.
+            </p>
+            <div class="persona-stats">
+                <div class="stat">
+                    <span class="stat-number">3</span>
+                    <span class="stat-label">Octaves</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number">50+</span>
+                    <span class="stat-label">Originals</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number">5</span>
+                    <span class="stat-label">Awards</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Discography -->
+    <section id="music">
+        <div class="section-header">
+            <h2 class="section-title">DISCOGRAPHY</h2>
+            <p style="font-family: 'Cinzel', serif; opacity: 0.7;">Vinyl Collection</p>
+        </div>
+        <div class="album-grid">
+            <div class="album-card">
+                <img src="https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=600&h=600&fit=crop" alt="Album 1" class="album-cover">
+                <div class="album-info">
+                    <h3 class="album-title">Midnight Wood</h3>
+                    <p class="album-year">2023</p>
+                </div>
+            </div>
+            <div class="album-card">
+                <img src="https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=600&h=600&fit=crop" alt="Album 2" class="album-cover">
+                <div class="album-info">
+                    <h3 class="album-title">Golden Hour</h3>
+                    <p class="album-year">2021</p>
+                </div>
+            </div>
+            <div class="album-card">
+                <img src="https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=600&h=600&fit=crop" alt="Album 3" class="album-cover">
+                <div class="album-info">
+                    <h3 class="album-title">Acoustic Soul</h3>
+                    <p class="album-year">2019</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tour Dates -->
+    <section id="tour">
+        <div class="section-header">
+            <h2 class="section-title">TOUR DATES</h2>
+            <p style="font-family: 'Cinzel', serif; opacity: 0.7;">2024 World Tour</p>
+        </div>
+        <div class="timeline">
+            <div class="tour-date">
+                <div class="tour-date-badge">MAR 15</div>
+                <div class="tour-node"></div>
+                <div class="tour-info">
+                    <h3>The Royal Theater</h3>
+                    <p class="tour-location">London, United Kingdom</p>
+                    <a href="#" class="tour-btn">GET TICKETS</a>
+                </div>
+            </div>
+            <div class="tour-date">
+                <div class="tour-info">
+                    <h3>Madison Square Garden</h3>
+                    <p class="tour-location">New York, USA</p>
+                    <a href="#" class="tour-btn">GET TICKETS</a>
+                </div>
+                <div class="tour-node"></div>
+                <div class="tour-date-badge">APR 02</div>
+            </div>
+            <div class="tour-date">
+                <div class="tour-date-badge">APR 18</div>
+                <div class="tour-node"></div>
+                <div class="tour-info">
+                    <h3>Sydney Opera House</h3>
+                    <p class="tour-location">Sydney, Australia</p>
+                    <a href="#" class="tour-btn">GET TICKETS</a>
+                </div>
+            </div>
+            <div class="tour-date">
+                <div class="tour-info">
+                    <h3>Tokyo Dome</h3>
+                    <p class="tour-location">Tokyo, Japan</p>
+                    <a href="#" class="tour-btn">GET TICKETS</a>
+                </div>
+                <div class="tour-node"></div>
+                <div class="tour-date-badge">MAY 05</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Gallery -->
+    <section id="gallery">
+        <div class="section-header">
+            <h2 class="section-title">VISUALS</h2>
+            <p style="font-family: 'Cinzel', serif; opacity: 0.7;">Live Moments</p>
+        </div>
+        <div class="gallery-grid">
+            <div class="gallery-item">
+                <img src="https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?w=800&h=1000&fit=crop" alt="Performance" class="gallery-img">
+                <div class="gallery-overlay">
+                    <p style="font-family: 'Cinzel', serif; color: var(--color-gold);">Live at Coachella 2023</p>
+                </div>
+            </div>
+            <div class="gallery-item">
+                <img src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=800&h=600&fit=crop" alt="Studio" class="gallery-img">
+                <div class="gallery-overlay">
+                    <p style="font-family: 'Cinzel', serif; color: var(--color-gold);">Studio Sessions</p>
+                </div>
+            </div>
+            <div class="gallery-item">
+                <img src="https://images.unsplash.com/photo-1508854710579-5cecc3a9ff17?w=800&h=900&fit=crop" alt="Backstage" class="gallery-img">
+                <div class="gallery-overlay">
+                    <p style="font-family: 'Cinzel', serif; color: var(--color-gold);">Behind the Scenes</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact -->
+    <section id="contact">
+        <div class="contact-container">
+            <h2 class="contact-title">BOOKING & INQUIRIES</h2>
+            <form id="booking-form">
+                <div class="form-group">
+                    <input type="text" class="form-input" placeholder=" " required>
+                    <label class="form-label">Your Name</label>
+                </div>
+                <div class="form-group">
+                    <input type="email" class="form-input" placeholder=" " required>
+                    <label class="form-label">Email Address</label>
+                </div>
+                <div class="form-group">
+                    <input type="text" class="form-input" placeholder=" ">
+                    <label class="form-label">Event Type</label>
+                </div>
+                <div class="form-group">
+                    <textarea class="form-input" rows="4" placeholder=" " style="resize: none;"></textarea>
+                    <label class="form-label">Message</label>
+                </div>
+                <button type="submit" class="submit-btn">SEND MESSAGE</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="social-links">
+            <a href="#">INSTAGRAM</a>
+            <a href="#">SPOTIFY</a>
+            <a href="#">YOUTUBE</a>
+            <a href="#">APPLE MUSIC</a>
+        </div>
+        <p class="copyright">© 2024 ELARA. ALL RIGHTS RESERVED.</p>
+    </footer>
+
+    <script>
+        // Register GSAP ScrollTrigger
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Custom Cursor
+        const cursor = document.querySelector('.cursor');
+        const cursorDot = document.querySelector('.cursor-dot');
+        
+        document.addEventListener('mousemove', (e) => {
+            gsap.to(cursor, { x: e.clientX - 10, y: e.clientY - 10, duration: 0.1 });
+            gsap.to(cursorDot, { x: e.clientX - 2, y: e.clientY - 2, duration: 0.5 });
+        });
+
+        document.querySelectorAll('a, button, .album-card, .gallery-item, .tour-date').forEach(el => {
+            el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
+            el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
+        });
+
+        // Guitar Strings Canvas Animation
+        const canvas = document.getElementById('guitar-canvas');
+        const ctx = canvas.getContext('2d');
+        let width, height;
+        let strings = [];
+        let mouse = { x: 0, y: 0 };
+
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+            initStrings();
+        }
+
+        class GuitarString {
+            constructor(x, baseY) {
+                this.x = x;
+                this.baseY = baseY;
+                this.points = [];
+                this.numPoints = 20;
+                this.amplitude = 0;
+                this.damping = 0.98;
+                this.frequency = 0.02;
+                
+                for (let i = 0; i < this.numPoints; i++) {
+                    this.points.push({ y: 0, velocity: 0 });
+                }
+            }
+
+            pluck() {
+                this.amplitude = 50;
+            }
+
+            update() {
+                // Mouse interaction
+                const dist = Math.abs(mouse.x - this.x);
+                if (dist < 50 && Math.abs(mouse.y - this.baseY) < 100) {
+                    this.amplitude = 30;
+                }
+
+                this.amplitude *= this.damping;
+                
+                for (let i = 0; i < this.numPoints; i++) {
+                    const targetY = Math.sin(i * this.frequency + Date.now() * 0.005) * this.amplitude;
+                    this.points[i].y += (targetY - this.points[i].y) * 0.1;
+                }
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.strokeStyle = 'rgba(212, 175, 55, 0.3)';
+                ctx.lineWidth = 1;
+                
+                ctx.moveTo(this.x, this.baseY);
+                for (let i = 0; i < this.numPoints; i++) {
+                    const x = this.x;
+                    const y = this.baseY + (i / (this.numPoints - 1)) * height * 0.6 - height * 0.3 + this.points[i].y;
+                    ctx.lineTo(x, y);
+                }
+                ctx.stroke();
+            }
+        }
+
+        function initStrings() {
+            strings = [];
+            const numStrings = 6;
+            const spacing = width / (numStrings + 1);
+            for (let i = 1; i <= numStrings; i++) {
+                strings.push(new GuitarString(spacing * i, height / 2));
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, width, height);
+            
+            strings.forEach(string => {
+                string.update();
+                string.draw();
+            });
+            
+            requestAnimationFrame(animate);
+        }
+
+        window.addEventListener('resize', resize);
+        window.addEventListener('mousemove', (e) => {
+            mouse.x = e.clientX;
+            mouse.y = e.clientY;
+        });
+
+        resize();
+        animate();
+
+        // Random plucking
+        setInterval(() => {
+            if (strings.length > 0) {
+                const randomString = strings[Math.floor(Math.random() * strings.length)];
+                randomString.pluck();
+            }
+        }, 2000);
+
+        // GSAP Animations
+        gsap.from('.hero-title', {
+            y: 100,
+            opacity: 0,
+            duration: 1.5,
+            ease: 'power4.out',
+            delay: 0.5
+        });
+
+        gsap.from('.hero-subtitle', {
+            y: 50,
+            opacity: 0,
+            duration: 1.5,
+            ease: 'power4.out',
+            delay: 0.8
+        });
+
+        // Persona Section Parallax
+        gsap.utils.toArray('.persona-side').forEach(side => {
+            gsap.from(side, {
+                scrollTrigger: {
+                    trigger: side,
+                    start: 'top 80%',
+                    toggleActions: 'play none none reverse'
+                },
+                x: side.classList.contains('persona-guitar') ? -100 : 100,
+                opacity: 0,
+                duration: 1.2,
+                ease: 'power4.out'
+            });
+        });
+
+        // Album Cards Stagger
+        gsap.from('.album-card', {
+            scrollTrigger: {
+                trigger: '#music',
+                start: 'top 70%'
+            },
+            y: 100,
+            opacity: 0,
+            rotation: -10,
+            duration: 1,
+            stagger: 0.2,
+            ease: 'power4.out'
+        });
+
+        // Tour Dates Animation
+        gsap.utils.toArray('.tour-date').forEach((date, i) => {
+            gsap.to(date, {
+                scrollTrigger: {
+                    trigger: date,
+                    start: 'top 80%',
+                    toggleActions: 'play none none reverse'
+                },
+                opacity: 1,
+                y: 0,
+                duration: 0.8,
+                delay: i * 0.1,
+                ease: 'power4.out'
+            });
+        });
+
+        // Gallery Parallax
+        gsap.utils.toArray('.gallery-item').forEach((item, i) => {
+            gsap.from(item, {
+                scrollTrigger: {
+                    trigger: item,
+                    start: 'top 85%',
+                    toggleActions: 'play none none reverse'
+                },
+                y: 50 + (i * 30),
+                opacity: 0,
+                duration: 1,
+                ease: 'power4.out'
+            });
+            
+            // Parallax effect on scroll
+            gsap.to(item, {
+                scrollTrigger: {
+                    trigger: item,
+                    start: 'top bottom',
+                    end: 'bottom top',
+                    scrub: 1
+                },
+                y: (i % 2 === 0) ? -30 : 30,
+                ease: 'none'
+            });
+        });
+
+        // Form Interaction
+        document.getElementById('booking-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const btn = e.target.querySelector('.submit-btn');
+            btn.textContent = 'MESSAGE SENT';
+            btn.style.background = 'var(--color-gold)';
+            btn.style.color = 'var(--color-guitar)';
+            
+            setTimeout(() => {
+                btn.textContent = 'SEND MESSAGE';
+                btn.style.background = 'transparent';
+                btn.style.color = 'var(--color-gold)';
+                e.target.reset();
+            }, 3000);
+        });
+
+        // Smooth Scroll for Navigation
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    gsap.to(window, {
+                        duration: 1.5,
+                        scrollTo: { y: target, offsetY: 0 },
+                        ease: 'power4.inOut'
+                    });
+                }
+            });
+        });
+
+        // Magnetic effect for buttons
+        document.querySelectorAll('.tour-btn, .submit-btn').forEach(btn => {
+            btn.addEventListener('mousemove', (e) => {
+                const rect = btn.getBoundingClientRect();
+                const x = e.clientX - rect.left - rect.width / 2;
+                const y = e.clientY - rect.top - rect.height / 2;
+                
+                gsap.to(btn, {
+                    x: x * 0.3,
+                    y: y * 0.3,
+                    duration: 0.3,
+                    ease: 'power2.out'
+                });
+            });
+            
+            btn.addEventListener('mouseleave', () => {
+                gsap.to(btn, {
+                    x: 0,
+                    y: 0,
+                    duration: 0.3,
+                    ease: 'power2.out'
+                });
+            });
+        });
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollToPlugin.min.js"></script>
+</body>
+</html>
